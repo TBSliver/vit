@@ -1,7 +1,9 @@
 # Copyright 2013 - 2018, Scott Kostyshak
 
 sub parse_vitrc {
-  my $vitrc = glob("~/.vitrc");
+  my $target_file = shift;
+  $target_file //= '~/.vitrc'; # default
+  my $vitrc = glob($target_file);
   if ( open(IN,"<$vitrc") ) {
     while (<IN>) {
       chop;
@@ -21,9 +23,8 @@ sub parse_vitrc {
         $skey = &replace_keycodes("$skey");
         $cmd = &replace_keycodes("$cmd");
 
-        # TODO: get rid of the eval().
-        # This shouldn't be too hard, but I need to figure out what exactly is happening here.
-        $skey = eval "\"$skey\"";
+        # Enforce stringification of shortcut key
+        $skey = "$skey";
 
         $shortcuts{$skey} = $cmd;
       }
