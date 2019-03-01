@@ -26,6 +26,7 @@ subtest 'ARGV empty' => sub {
   is $titlebar,      0,     'titlebar correct';
   is $trap->stdout,  '',    'stdout empty';
   is $trap->exit,    undef, 'no exit';
+  is \@ARGV,         [],    'ARGV empty';
 };
 
 subtest 'ARGV help' => sub {
@@ -81,8 +82,27 @@ subtest 'ARGV titlebar' => sub {
       is $titlebar,      1,     'titlebar correct';
       is $trap->stdout,  "",    'stdout correct';
       is $trap->exit,    undef, 'exit 0';
+      is \@ARGV,         [],    'ARGV empty';
     };
   }
+};
+
+subtest 'ARGV ignored items' => sub {
+  local @ARGV = ( '--titlebar', 'ignored', '--someotheropt', 'more ignored' );
+  local ( $cli_args, $audit, $titlebar, $version )
+      = ( '',        0,      0        , undef );
+
+  trap { parse_args() };
+
+  # it actually ends up appending a space
+  # Maybe remove trailing spaces - updated version will mangle that
+  $cli_args =~ s/\s+$//;
+  is $cli_args,      'ignored --someotheropt more ignored', 'cli_args correct';
+  is $audit,         0,     'audit correct';
+  is $titlebar,      1,     'titlebar correct';
+  is $trap->stdout,  "",    'stdout correct';
+  is $trap->exit,    undef, 'no exit';
+  is \@ARGV,         [],    'ARGV empty';
 };
 
 # testing --audit requires wrapping the file open
