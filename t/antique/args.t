@@ -26,11 +26,10 @@ subtest 'ARGV empty' => sub {
   is $titlebar,      0,     'titlebar correct';
   is $trap->stdout,  '',    'stdout empty';
   is $trap->exit,    undef, 'no exit';
-  is \@ARGV,         [],    'ARGV empty';
 };
 
 subtest 'ARGV help' => sub {
-  for my $arg ( qw/ --help -help -h / ) {
+  for my $arg ( qw/ --help -h / ) {
     subtest $arg => sub {
       local @ARGV = ( $arg );
       local ( $cli_args, $audit, $titlebar )
@@ -49,7 +48,7 @@ subtest 'ARGV help' => sub {
 };
 
 subtest 'ARGV version' => sub {
-  for my $arg ( qw/ --version -version -v / ) {
+  for my $arg ( qw/ --version -v / ) {
     subtest $arg => sub {
       local @ARGV = ( $arg );
       local ( $cli_args, $audit, $titlebar, $version )
@@ -68,7 +67,7 @@ subtest 'ARGV version' => sub {
 };
 
 subtest 'ARGV titlebar' => sub {
-  for my $arg ( qw/ --titlebar -titlebar -t / ) {
+  for my $arg ( qw/ --titlebar -t / ) {
     subtest $arg => sub {
       local @ARGV = ( $arg );
       local ( $cli_args, $audit, $titlebar, $version )
@@ -82,7 +81,6 @@ subtest 'ARGV titlebar' => sub {
       is $titlebar,      1,     'titlebar correct';
       is $trap->stdout,  "",    'stdout correct';
       is $trap->exit,    undef, 'exit 0';
-      is \@ARGV,         [],    'ARGV empty';
     };
   }
 };
@@ -102,7 +100,6 @@ subtest 'ARGV ignored items' => sub {
   is $titlebar,      1,     'titlebar correct';
   is $trap->stdout,  "",    'stdout correct';
   is $trap->exit,    undef, 'no exit';
-  is \@ARGV,         [],    'ARGV empty';
 };
 
 # testing --audit requires wrapping the file open

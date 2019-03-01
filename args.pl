@@ -1,32 +1,25 @@
-# Copyright 2012 - 2013, Steve Rader
-# Copyright 2013 - 2018, Scott Kostyshak
+#! /usr/bin/env perl
+
+use strict;
+use warnings;
+
+use App::Vit::Util;
+
+our ( $audit, $titlebar, $cli_args, $version );
 
 sub parse_args {
-  while ( @ARGV ) {
-    if ( $ARGV[0] eq '--help' || $ARGV[0] eq '-help' || $ARGV[0] eq '-h' ) {
-      &usage();
-    }
-    if ( $ARGV[0] eq '--version' || $ARGV[0] eq '-version' || $ARGV[0] eq '-v' ) {
-      print "$version\n";
-      exit 0;
-    }
-    if ( $ARGV[0] eq '--audit' || $ARGV[0] eq '-audit' || $ARGV[0] eq '-a' ) {
-      $audit = 1;
-      shift @ARGV;
-      next;
-    }
-    if ( $ARGV[0] eq '--titlebar' || $ARGV[0] eq '-titlebar' || $ARGV[0] eq '-t' ) {
-      $titlebar = 1;
-      shift @ARGV;
-      next;
-    }
-    $cli_args .= "$ARGV[0] ";
-    shift @ARGV;
-    next;
-  }
+  my $args = App::Vit::Util::parse_args();
+
+  usage()   if $args->{help};
+  version() if $args->{version};
+  $audit    = $args->{audit};
+  $titlebar = $args->{titlebar};
+  $cli_args = join ' ', @{ $args->{passthrough} };
+
   if ( $audit ) {
-    open(AUDIT, ">", "vit_audit.log") or die "$!";
-    open STDERR, '>&AUDIT';
+    # TODO move the audit writing/opening code
+    open(AUDIT, ">", "vit_audit.log") or die "$!"; ## no critic
+    open STDERR, '>', '&AUDIT';
 
     # flush AUDIT after printing to it
     my $ofh = select AUDIT;
@@ -40,13 +33,21 @@ sub parse_args {
 #------------------------------------------------------------------
 
 sub usage {
-  print "usage: vit [switches] [task_args]\n";
-  print "  -audit     print task commands to vit_audit.log\n";
-  print "  -titlebar  sets the xterm titlebar to \"$version\"\n";
-  print "  -version  prints the version\n";
-  print "  task_args  any set of task commandline args that print an \"ID\" column\n";
+  my $usage = App::Vit::Util::usage_string( $version );
+  print $usage;
+  exit 0;
+}
+
+sub version {
+  print "$version\n";
   exit 0;
 }
 
 return 1;
+
+=head1 COPYRIGHT
+
+See LICENCE file
+
+=cut
 
